@@ -23,7 +23,7 @@ CREATE TABLE "Manager" (
     UserID INT,
     AddedBy INT,
     FOREIGN KEY (UserID) REFERENCES "User"(ID) ON DELETE CASCADE,
-    FOREIGN KEY (AddedBy) REFERENCES "User"(ID) ON DELETE SET NULL
+    FOREIGN KEY (AddedBy) REFERENCES "Administrator"(AdministratorID) ON DELETE SET NULL
 );
 
 -- Technician Table (References User.ID, AddedBy references User.ID)
