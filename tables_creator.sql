@@ -139,7 +139,7 @@ CREATE TABLE "Locker" (
     LockerRoomID INT not null,
     OccupiedBy INT,
     FOREIGN KEY (LockerRoomID) REFERENCES "LockerRoom"(ID) ON DELETE CASCADE,
-    FOREIGN KEY (OccupiedBy) REFERENCES "Client"(ClientID) ON DELETE SET NULL
+    FOREIGN KEY (OccupiedBy) REFERENCES "Membership"(ID) ON DELETE SET NULL
 );
 
 CREATE TABLE "Training" (
