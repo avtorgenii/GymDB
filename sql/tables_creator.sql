@@ -12,6 +12,7 @@ CREATE TABLE "User" (
 CREATE TABLE "Administrator" (
     AdministratorID SERIAL PRIMARY KEY,
     UserID INT not null,
+    CreatedAt DATE DEFAULT current_date not null,
     FOREIGN KEY (UserID) REFERENCES "User"(ID) ON DELETE CASCADE
 );
 
