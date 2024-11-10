@@ -19,6 +19,7 @@ CREATE TABLE "Manager" (
     ManagerID SERIAL PRIMARY KEY,
     UserID INT not null,
     AddedBy INT,
+    CreatedAt DATE DEFAULT current_date not null,
     FOREIGN KEY (UserID) REFERENCES "User"(ID) ON DELETE CASCADE,
     FOREIGN KEY (AddedBy) REFERENCES "Administrator"(AdministratorID) ON DELETE SET NULL
 );
@@ -27,6 +28,7 @@ CREATE TABLE "Technician" (
     TechnicianID SERIAL PRIMARY KEY,
     UserID INT not null ,
     AddedBy INT,
+    CreatedAt DATE DEFAULT current_date not null,
     FOREIGN KEY (UserID) REFERENCES "User"(ID) ON DELETE CASCADE,
     FOREIGN KEY (AddedBy) REFERENCES "Manager"(ManagerID) ON DELETE SET NULL
 );
@@ -35,6 +37,7 @@ CREATE TABLE "Trainer" (
     TrainerID SERIAL PRIMARY KEY,
     UserID INT not null,
     AddedBy INT,
+    CreatedAt DATE DEFAULT current_date not null,
     FOREIGN KEY (UserID) REFERENCES "User"(ID) ON DELETE CASCADE,
     FOREIGN KEY (AddedBy) REFERENCES "Manager"(ManagerID) ON DELETE SET NULL
 );
@@ -49,7 +52,7 @@ CREATE TABLE "Offer" (
     ID SERIAL PRIMARY KEY,
     Name VARCHAR(50) not null,
     Description VARCHAR(255),
-    Price FLOAT not null check ( Price >= 0.00 ),
+    Price DECIMAL not null check ( Price >= 0.00 ),
     Duration INT not null check ( Duration >= 0 ),
     AvailableToPurchase BOOLEAN not null DEFAULT true
 );
@@ -90,7 +93,10 @@ CREATE TABLE "Availability" (
 CREATE TABLE "DepartmentLocation" (
     ID SERIAL PRIMARY KEY,
     Name VARCHAR(255) not null,
-    Adress VARCHAR(255) not null,
+    City VARCHAR(255) not null,
+    PostalCode VARCHAR(50) not null,
+    Street VARCHAR(255) not null,
+    BuildingNumber VARCHAR(10) not null,
     ManagedBy INT,
     FOREIGN KEY (ManagedBy) REFERENCES "Manager"(ManagerID) ON DELETE SET NULL
 );
