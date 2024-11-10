@@ -1,9 +1,9 @@
 CREATE TABLE "User" (
     ID SERIAL PRIMARY KEY,
-    Email VARCHAR(100) UNIQUE not null ,
+    Email VARCHAR(100) UNIQUE not null CHECK (Email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
     FirstName VARCHAR(255),
     LastName VARCHAR(255),
-    Phone VARCHAR(15) UNIQUE,
+    Phone VARCHAR(15) UNIQUE CHECK (Phone ~* '^\+?[1-9]\d{1,14}$' OR Phone IS NULL),
     Password VARCHAR(255) not null ,
     RegistrationDate DATE DEFAULT current_date not null ,
     IsActive BOOLEAN default true not null
@@ -114,6 +114,7 @@ CREATE TYPE FAULT_STATUS AS ENUM('Reported','Under Repair','Fixed','Cannot Be Re
 CREATE TABLE "Fault" (
     ID SERIAL PRIMARY KEY,
     Description VARCHAR(255),
+    DateReported DATE not null default current_date,
     Status FAULT_STATUS not null default 'Reported',
     EquipmentID INT not null,
     HandledBy INT,
