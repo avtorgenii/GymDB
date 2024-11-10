@@ -3,7 +3,7 @@ CREATE TABLE "User" (
     Email VARCHAR(100) UNIQUE not null CHECK (Email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
     FirstName VARCHAR(255),
     LastName VARCHAR(255),
-    Phone VARCHAR(15) UNIQUE CHECK (Phone ~* '^\+?[1-9]\d{1,14}$' OR Phone IS NULL),
+    Phone VARCHAR(25) UNIQUE CHECK (Phone ~* '^\+?[1-9]\d{1,14}$' OR Phone IS NULL),
     Password VARCHAR(255) not null ,
     RegistrationDate DATE DEFAULT current_date not null ,
     IsActive BOOLEAN default true not null

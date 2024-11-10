@@ -1,16 +1,16 @@
 number,status,lockerroomid,occupiedby
-81,Occupied,3,23
-24,Not available,2,
-51,Occupied,2,24
-52,Not available,2,
-84,Occupied,1,18
-42,Free,2,
-25,Not available,2,
-49,Free,2,
-14,Free,2,
-56,Not available,2,
-9,Free,1,
-43,Not available,3,
-40,Occupied,2,10
-6,Not available,3,
-61,Not available,3,
+93,Occupied,3,13
+50,Occupied,2,25
+56,Occupied,1,22
+79,Occupied,1,1
+77,Not available,2,
+33,Not available,3,
+96,Not available,3,
+31,Not available,1,
+77,Not available,3,
+81,Occupied,1,30
+92,Occupied,3,26
+59,Not available,3,
+84,Occupied,1,28
+3,Occupied,1,24
+47,Not available,1,
