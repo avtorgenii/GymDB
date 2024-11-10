@@ -3,7 +3,7 @@ CREATE TABLE "User" (
     Email VARCHAR(100) UNIQUE not null ,
     FirstName VARCHAR(255),
     LastName VARCHAR(255),
-    Phone VARCHAR(15) UNIQUE,
+    Phone VARCHAR(25) UNIQUE,
     Password VARCHAR(255) not null ,
     RegistrationDate DATE DEFAULT current_date not null ,
     IsActive BOOLEAN default true not null
@@ -12,6 +12,7 @@ CREATE TABLE "User" (
 CREATE TABLE "Administrator" (
     AdministratorID SERIAL PRIMARY KEY,
     UserID INT not null,
+    CreatedAt DATE DEFAULT current_date not null,
     FOREIGN KEY (UserID) REFERENCES "User"(ID) ON DELETE CASCADE
 );
 
