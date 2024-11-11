@@ -4,12 +4,11 @@ import random
 from datetime import datetime, timedelta
 
 # Initialize Faker
-def init_faker(seed):
+def init_faker():
     fake = Faker('pl_PL')
-    Faker.seed(seed)
     return fake
 
-fake = init_faker(42)
+fake = init_faker()
 
 # Helper function to write rows to CSV
 def write_to_csv(filename, fieldnames, rows):
@@ -17,6 +16,17 @@ def write_to_csv(filename, fieldnames, rows):
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
+
+# Helper function to
+def get_duration(file_path, row_index):
+    with open(file_path, mode='r') as file:
+        reader = csv.DictReader(file)
+        rows = list(reader)
+        if row_index-1 < len(rows):
+            #print('row_index: ', row_index, '\nduration: ', rows[row_index-1]["duration"])
+            return rows[row_index-1]["duration"]
+        else:
+            raise IndexError("Row index out of range")
 
 # Function to create users
 def generate_users(num_rows):
@@ -102,12 +112,13 @@ def generate_offers(num_rows):
 def generate_memberships(num_rows, client_ids, offer_ids):
     rows = []
     for _ in range(num_rows):
+        random_offer_id = random.choice(offer_ids)
         start_date = fake.date_this_year()
-        end_date = (start_date + timedelta(days=random.randint(30, 365))).strftime("%Y-%m-%d")
+        end_date = (start_date + timedelta(days=int(get_duration("csv/offer.csv", random_offer_id))*random.randint(1, 20))).strftime("%Y-%m-%d")
         rows.append({
             "startdate": start_date.strftime("%Y-%m-%d"),
             "enddate": end_date,
-            "offerid": random.choice(offer_ids),
+            "offerid": random_offer_id,
             "ownedby": random.choice(client_ids),
         })
     write_to_csv("csv/membership.csv", rows[0].keys(), rows)
