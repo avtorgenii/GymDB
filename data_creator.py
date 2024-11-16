@@ -1,15 +1,15 @@
 from faker import Faker
 import csv
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
+
 
 # Initialize Faker
-def init_faker(seed):
+def init_faker():
     fake = Faker('pl_PL')
-    Faker.seed(seed)
     return fake
 
-fake = init_faker(42)
+fake = init_faker()
 
 # Helper function to write rows to CSV
 def write_to_csv(filename, fieldnames, rows):
@@ -17,6 +17,17 @@ def write_to_csv(filename, fieldnames, rows):
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
+
+# Helper function to
+def get_duration(file_path, row_index):
+    with open(file_path, mode='r') as file:
+        reader = csv.DictReader(file)
+        rows = list(reader)
+        if row_index-1 < len(rows):
+            #print('row_index: ', row_index, '\nduration: ', rows[row_index-1]["duration"])
+            return rows[row_index-1]["duration"]
+        else:
+            raise IndexError("Row index out of range")
 
 # Function to create users
 def generate_users(num_rows):
@@ -34,54 +45,64 @@ def generate_users(num_rows):
     write_to_csv("csv/user.csv", rows[0].keys(), rows)
 
 # Function to create administrators
-def generate_administrators(num_rows, user_ids):
+def generate_administrators(num_rows, user_ids, assigned_user_ids):
     rows = []
     for _ in range(num_rows):
+        user_id = random.choice([uid for uid in user_ids if uid not in assigned_user_ids])
+        assigned_user_ids.add(user_id)
         rows.append({
-            "userid": random.choice(user_ids),
+            "userid": user_id,
             "createdat": fake.date_this_year(),
         })
     write_to_csv("csv/administrator.csv", rows[0].keys(), rows)
 
 # Function to create managers
-def generate_managers(num_rows, user_ids, admin_ids):
+def generate_managers(num_rows, user_ids, admin_ids, assigned_user_ids):
     rows = []
     for _ in range(num_rows):
+        user_id = random.choice([uid for uid in user_ids if uid not in assigned_user_ids])
+        assigned_user_ids.add(user_id)
         rows.append({
-            "userid": random.choice(user_ids),
+            "userid": user_id,
             "addedby": random.choice(admin_ids) if admin_ids else None,
             "createdat": fake.date_this_year(),
         })
     write_to_csv("csv/manager.csv", rows[0].keys(), rows)
 
 # Function to create technicians
-def generate_technicians(num_rows, user_ids, manager_ids):
+def generate_technicians(num_rows, user_ids, manager_ids, assigned_user_ids):
     rows = []
     for _ in range(num_rows):
+        user_id = random.choice([uid for uid in user_ids if uid not in assigned_user_ids])
+        assigned_user_ids.add(user_id)
         rows.append({
-            "userid": random.choice(user_ids),
+            "userid": user_id,
             "addedby": random.choice(manager_ids) if manager_ids else None,
             "createdat": fake.date_this_year(),
         })
     write_to_csv("csv/technician.csv", rows[0].keys(), rows)
 
 # Function to create trainers
-def generate_trainers(num_rows, user_ids, manager_ids):
+def generate_trainers(num_rows, user_ids, manager_ids, assigned_user_ids):
     rows = []
     for _ in range(num_rows):
+        user_id = random.choice([uid for uid in user_ids if uid not in assigned_user_ids])
+        assigned_user_ids.add(user_id)
         rows.append({
-            "userid": random.choice(user_ids),
+            "userid": user_id,
             "addedby": random.choice(manager_ids) if manager_ids else None,
             "createdat": fake.date_this_year(),
         })
     write_to_csv("csv/trainer.csv", rows[0].keys(), rows)
 
 # Function to create clients
-def generate_clients(num_rows, user_ids):
+def generate_clients(num_rows, user_ids, assigned_user_ids):
     rows = []
     for _ in range(num_rows):
+        user_id = random.choice([uid for uid in user_ids if uid not in assigned_user_ids])
+        assigned_user_ids.add(user_id)
         rows.append({
-            "userid": random.choice(user_ids),  # Reference to User ID
+            "userid": user_id,
         })
     write_to_csv("csv/client.csv", rows[0].keys(), rows)
 
@@ -102,12 +123,13 @@ def generate_offers(num_rows):
 def generate_memberships(num_rows, client_ids, offer_ids):
     rows = []
     for _ in range(num_rows):
+        random_offer_id = random.choice(offer_ids)
         start_date = fake.date_this_year()
-        end_date = (start_date + timedelta(days=random.randint(30, 365))).strftime("%Y-%m-%d")
+        end_date = (start_date + timedelta(days=int(get_duration("csv/offer.csv", random_offer_id))*random.randint(1, 20))).strftime("%Y-%m-%d")
         rows.append({
             "startdate": start_date.strftime("%Y-%m-%d"),
             "enddate": end_date,
-            "offerid": random.choice(offer_ids),
+            "offerid": random_offer_id,
             "ownedby": random.choice(client_ids),
         })
     write_to_csv("csv/membership.csv", rows[0].keys(), rows)
@@ -135,12 +157,24 @@ def generate_trainer_qualifications(num_rows, trainer_ids, training_type_ids):
     rows = [{"trainerid": trainer_id, "trainingtypeid": training_type_id} for trainer_id, training_type_id in rows]
     write_to_csv("csv/trainerqualifications.csv", rows[0].keys(), rows)
 
+def generate_valid_times():
+    # Generate start_time between 08:00:00 and 21:00:00
+    start_time = fake.time_object()
+    while start_time < time(8, 0) or start_time > time(21, 0):
+        start_time = fake.time_object()
+
+    # Set end_time to be at least 1 hour after start_time, max to 22:00:00
+    end_time = (datetime.combine(datetime.today(), start_time) + timedelta(hours=1)).time()
+    if end_time > time(22, 0):
+        end_time = time(22, 0)
+
+    return start_time, end_time
+
 
 def generate_trainings(num_rows, training_type_ids, hall_ids, trainer_ids, manager_ids):
     rows = []
     for _ in range(num_rows):
-        start_time = fake.time_object()
-        end_time = (datetime.combine(datetime.today(), start_time) + timedelta(hours=1)).time()
+        start_time, end_time = generate_valid_times()
         rows.append({
             "date": fake.date_this_year(),
             "starttime": start_time.strftime("%H:%M:%S"),
@@ -229,8 +263,7 @@ def generate_lockers(num_rows, locker_room_ids, membership_ids):
 def generate_availability(num_rows, trainer_ids):
     rows = []
     for _ in range(num_rows):
-        start_time = fake.time_object(end_datetime=None)  # random time
-        end_time = (datetime.combine(datetime.today(), start_time) + timedelta(hours=1)).time()  # add 1 hour
+        start_time, end_time = generate_valid_times()
         rows.append({
             "trainerid": random.choice(trainer_ids),
             "date": fake.date_this_year(),
@@ -242,9 +275,9 @@ def generate_availability(num_rows, trainer_ids):
 
 if __name__ == '__main__':
     num_users = 100
-    num_administrators = 10
-    num_managers = 20
-    num_technicians = 15
+    num_administrators = 5
+    num_managers = 15
+    num_technicians = 10
     num_trainers = 20
     num_clients = 50
     num_offers = 15
@@ -261,24 +294,25 @@ if __name__ == '__main__':
 
     generate_users(num_users)
     user_ids = list(range(1, num_users + 1))
+    assigned_user_ids = set()
 
-    generate_administrators(num_administrators, user_ids)
+    generate_administrators(num_administrators, user_ids, assigned_user_ids)
     admin_ids = list(range(1, num_administrators + 1))
 
-    generate_managers(num_managers, user_ids, admin_ids)
+    generate_managers(num_managers, user_ids, admin_ids, assigned_user_ids)
     manager_ids = list(range(1, num_managers + 1))
 
-    generate_technicians(num_technicians, user_ids, manager_ids)
+    generate_technicians(num_technicians, user_ids, manager_ids, assigned_user_ids)
     technician_ids = list(range(1, num_technicians + 1))
 
-    generate_trainers(num_trainers, user_ids, manager_ids)
+    generate_trainers(num_trainers, user_ids, manager_ids, assigned_user_ids)
     trainer_ids = list(range(1, num_trainers + 1))
+
+    generate_clients(num_clients, user_ids, assigned_user_ids)
+    client_ids = list(range(1, num_clients + 1))
 
     generate_offers(num_offers)
     offer_ids = list(range(1, num_offers + 1))
-
-    generate_clients(num_clients, user_ids)
-    client_ids = list(range(1, num_clients + 1))
 
     generate_memberships(num_memberships, client_ids, offer_ids)
 
