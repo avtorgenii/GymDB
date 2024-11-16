@@ -1,4 +1,6 @@
 from faker import Faker
+from numpy.f2py.auxfuncs import throw_error
+
 import csv
 import random
 from datetime import datetime, timedelta, time
@@ -120,27 +122,39 @@ def generate_offers(num_rows):
     write_to_csv("csv/offer.csv", rows[0].keys(), rows)
 
 # Function to create memberships
-def generate_memberships(num_rows, client_ids, offer_ids):
+def generate_memberships(num_rows, client_ids, offer_ids, assigned_client_ids):
     rows = []
     for _ in range(num_rows):
         random_offer_id = random.choice(offer_ids)
         start_date = fake.date_this_year()
         end_date = (start_date + timedelta(days=int(get_duration("csv/offer.csv", random_offer_id))*random.randint(1, 20))).strftime("%Y-%m-%d")
+        client_id = random.choice([cid for cid in client_ids if cid not in assigned_client_ids])
+        assigned_client_ids.add(client_id)
         rows.append({
             "startdate": start_date.strftime("%Y-%m-%d"),
             "enddate": end_date,
             "offerid": random_offer_id,
-            "ownedby": random.choice(client_ids),
+            "ownedby": client_id,
         })
     write_to_csv("csv/membership.csv", rows[0].keys(), rows)
 
 # Function to create training types
 def generate_training_types(num_rows):
     training_types = ["Yoga", "Pilates", "CrossFit", "HIIT", "Strength Training", "Cardio", "Boxing"]
+
+    if num_rows > len(training_types):
+        raise ValueError("DESIRED AMOUNT OF TRAINING TYPES IS BIGGER THAN AMOUNT OF POSSIBLE TRAINING TYPES")
+
+    assigned_types = []
+
     rows = []
     for _ in range(num_rows):
+        tt = random.choice([tt for tt in training_types if tt not in assigned_types])
+
+        assigned_types.append(tt)
+
         rows.append({
-            "name": random.choice(training_types),
+            "name": tt,
             "description": fake.text(max_nb_chars=100),
         })
     write_to_csv("csv/trainingtype.csv", rows[0].keys(), rows)
@@ -176,7 +190,7 @@ def generate_trainings(num_rows, training_type_ids, hall_ids, trainer_ids, manag
     for _ in range(num_rows):
         start_time, end_time = generate_valid_times()
         rows.append({
-            "date": fake.date_this_year(),
+            "date": fake.date_between(start_date='-4y', end_date='today'),
             "starttime": start_time.strftime("%H:%M:%S"),
             "endtime": end_time.strftime("%H:%M:%S"),
             "trainingtypeid": random.choice(training_type_ids),
@@ -199,16 +213,18 @@ def generate_training_attendance(num_rows, training_ids, client_ids):
 
 
 # Function to create department locations
-def generate_department_locations(num_rows, manager_ids):
+def generate_department_locations(num_rows, manager_ids, assigned_manager_ids):
     rows = []
     for _ in range(num_rows):
+        mid = random.choice([mid for mid in manager_ids if mid not in assigned_manager_ids])
+        assigned_manager_ids.add(mid)
         rows.append({
             "name": fake.company(),
             "city": fake.city(),
             "postalcode": fake.postcode(),
             "street": fake.street_name(),
             "buildingnumber": fake.building_number(),
-            "managedby": random.choice(manager_ids) if manager_ids else None,
+            "managedby": mid,
         })
     write_to_csv("csv/departmentlocation.csv", rows[0].keys(), rows)
 
@@ -225,12 +241,53 @@ def generate_halls(num_rows, department_location_ids):
 # Function to create equipment
 def generate_equipment(num_rows, hall_ids):
     rows = []
+    equipment_names = [
+        "Treadmill",
+        "Dumbbell Set",
+        "Barbell",
+        "Kettlebell",
+        "Resistance Bands",
+        "Medicine Ball",
+        "Jump Rope",
+        "Rowing Machine",
+        "Yoga Mat",
+        "Punching Bag",
+        "Elliptical Trainer",
+        "Stationary Bike",
+        "Weight Bench",
+        "Pull-Up Bar",
+        "Speed Ladder",
+        "Agility Cones",
+        "Foam Roller",
+        "Power Rack",
+        "Battle Rope",
+        "Bosu Ball"
+    ]
+
     for _ in range(num_rows):
         rows.append({
-            "name": fake.word(),
+            "name": random.choice(equipment_names),
             "hallid": random.choice(hall_ids),
         })
     write_to_csv("csv/equipment.csv", rows[0].keys(), rows)
+
+# Function to create fault records
+def generate_faults(num_rows, equipment_ids, technician_ids, manager_ids):
+    rows = []
+    status_options = ['Reported','Under Repair','Fixed','Cannot Be Repaired']
+
+    for _ in range(num_rows):
+        rows.append({
+            "description": fake.text(max_nb_chars=150),
+            "datereported": fake.date_this_year(),
+            "status": random.choice(status_options),
+            "equipmentid": random.choice(equipment_ids),
+            "handledby": random.choice(technician_ids) if technician_ids else None,
+            "addedby": random.choice(manager_ids) if manager_ids else None,
+        })
+
+    write_to_csv("csv/fault.csv", rows[0].keys(), rows)
+
 
 # Function to create locker rooms
 def generate_locker_rooms(num_rows, department_location_ids):
@@ -276,21 +333,32 @@ def generate_availability(num_rows, trainer_ids):
 if __name__ == '__main__':
     num_users = 100
     num_administrators = 5
-    num_managers = 15
+    num_managers = 5
     num_technicians = 10
     num_trainers = 20
-    num_clients = 50
+    num_clients = 60
+
+    if num_users != num_administrators + num_managers + num_technicians + num_trainers + num_clients:
+        raise ValueError("NUMBER OF USERS IS NOT EQUAL TO SUM OF USERS WITH ROLES")
+
     num_offers = 15
-    num_memberships = 30
-    num_training_types = 10
+    num_memberships = 50
+    num_training_types = 7
     num_department_locations = 5
-    num_halls = 10
-    num_equipment = 20
-    num_lockers = 15
+    num_halls = 20
+
+    if num_department_locations > num_training_types:
+        raise ValueError("NUMBER OF DEPARTMENTS IS GREATER THAN NUMBER OF HALLS")
+
+    num_equipment = 200
+    num_faults = 50
+    num_locker_rooms = 20
+    num_lockers = 150
     num_trainer_qualifications = 20
-    num_availability_records = 20
-    num_training_sessions = 25
-    num_training_attendance = 50
+    num_availability_records = 2000
+    num_training_sessions = 2500
+    num_training_attendance = 10000
+
 
     generate_users(num_users)
     user_ids = list(range(1, num_users + 1))
@@ -301,6 +369,7 @@ if __name__ == '__main__':
 
     generate_managers(num_managers, user_ids, admin_ids, assigned_user_ids)
     manager_ids = list(range(1, num_managers + 1))
+    assigned_manager_ids = set()
 
     generate_technicians(num_technicians, user_ids, manager_ids, assigned_user_ids)
     technician_ids = list(range(1, num_technicians + 1))
@@ -314,12 +383,13 @@ if __name__ == '__main__':
     generate_offers(num_offers)
     offer_ids = list(range(1, num_offers + 1))
 
-    generate_memberships(num_memberships, client_ids, offer_ids)
+    assigned_client_ids = set()
+    generate_memberships(num_memberships, client_ids, offer_ids, assigned_client_ids)
 
     generate_training_types(num_training_types)
     training_type_ids = list(range(1, num_training_types + 1))
 
-    generate_department_locations(num_department_locations, manager_ids)
+    generate_department_locations(num_department_locations, manager_ids, assigned_manager_ids)
     department_location_ids = list(range(1, num_department_locations + 1))
 
     generate_halls(num_halls, department_location_ids)
@@ -328,8 +398,10 @@ if __name__ == '__main__':
     generate_equipment(num_equipment, hall_ids)
     equipment_ids = list(range(1, num_equipment + 1))
 
-    generate_locker_rooms(3, department_location_ids)
-    locker_room_ids = list(range(1, 4))
+    generate_faults(num_faults, equipment_ids, technician_ids, manager_ids)
+
+    generate_locker_rooms(num_locker_rooms, department_location_ids)
+    locker_room_ids = list(range(1, num_locker_rooms))
 
     generate_lockers(num_lockers, locker_room_ids, list(range(1, num_memberships + 1)))
 

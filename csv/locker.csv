@@ -1,16 +1,151 @@
 number,status,lockerroomid,occupiedby
-18,Occupied,2,4
-24,Free,3,
-90,Occupied,2,1
-94,Occupied,3,16
-15,Not available,3,
-100,Not available,1,
-94,Free,1,
-45,Not available,2,
-90,Free,2,
-46,Not available,3,
+78,Free,6,
+35,Not available,5,
+58,Not available,14,
+93,Free,12,
+21,Free,7,
+38,Occupied,13,4
+44,Free,8,
+90,Not available,1,
+67,Not available,19,
+66,Not available,2,
+79,Occupied,10,17
+1,Not available,1,
+9,Occupied,18,37
+47,Free,7,
+96,Free,19,
+36,Not available,3,
+95,Occupied,8,42
+84,Not available,12,
+76,Occupied,11,8
+89,Free,13,
+65,Free,12,
+27,Free,5,
+2,Free,9,
+64,Free,3,
+15,Occupied,14,42
+62,Not available,10,
+51,Occupied,15,26
+62,Not available,11,
+86,Free,19,
+64,Free,17,
+38,Free,11,
+53,Free,10,
+61,Occupied,3,4
+3,Not available,8,
+24,Not available,4,
+77,Occupied,7,7
+66,Free,3,
+58,Free,2,
+74,Free,18,
+41,Free,15,
+96,Free,17,
+14,Occupied,14,39
+47,Not available,2,
+10,Free,1,
+11,Free,13,
+57,Free,1,
+98,Free,8,
+95,Free,6,
+37,Not available,9,
+95,Free,2,
+20,Occupied,18,34
+5,Free,18,
+69,Not available,9,
+47,Free,3,
+15,Occupied,2,40
+63,Free,16,
+51,Free,13,
+10,Free,11,
+38,Not available,12,
+27,Not available,16,
+11,Not available,17,
+61,Occupied,5,35
+5,Not available,1,
+51,Occupied,10,23
+95,Not available,10,
+22,Occupied,16,37
+80,Free,8,
+37,Not available,5,
+85,Occupied,1,28
+71,Occupied,2,47
+76,Occupied,16,30
+62,Not available,14,
+59,Occupied,16,26
+61,Free,4,
+45,Free,3,
+88,Occupied,16,45
+47,Free,6,
+22,Free,13,
+32,Not available,7,
+26,Not available,15,
+88,Free,3,
+26,Not available,10,
+44,Occupied,15,24
+1,Free,14,
+77,Not available,15,
+30,Not available,15,
+43,Occupied,8,47
+59,Occupied,13,13
+19,Free,2,
+38,Occupied,15,34
+12,Free,17,
+16,Occupied,6,43
 16,Not available,1,
-39,Free,3,
-91,Occupied,3,12
-87,Occupied,3,17
-36,Free,1,
+62,Not available,10,
+52,Free,11,
+51,Free,13,
+94,Free,1,
+94,Occupied,6,37
+9,Free,5,
+85,Free,16,
+73,Occupied,1,33
+39,Free,18,
+15,Occupied,9,7
+27,Not available,12,
+92,Occupied,9,45
+46,Free,4,
+46,Free,18,
+64,Free,1,
+35,Occupied,4,15
+49,Occupied,16,23
+96,Occupied,19,39
+31,Free,3,
+16,Occupied,2,49
+22,Free,16,
+27,Not available,5,
+36,Occupied,13,47
+94,Occupied,19,22
+37,Occupied,15,40
+88,Free,13,
+73,Not available,4,
+1,Free,11,
+3,Occupied,13,25
+51,Not available,9,
+10,Free,7,
+23,Not available,16,
+30,Not available,9,
+40,Not available,3,
+57,Free,13,
+51,Not available,15,
+93,Free,4,
+99,Occupied,17,33
+5,Occupied,19,5
+16,Not available,17,
+45,Not available,5,
+86,Not available,4,
+20,Not available,3,
+45,Free,14,
+15,Not available,4,
+44,Free,12,
+11,Not available,12,
+55,Occupied,8,15
+25,Not available,4,
+83,Free,7,
+62,Occupied,11,42
+4,Occupied,13,38
+4,Not available,9,
+53,Not available,8,
+27,Free,6,
+30,Free,8,
+62,Free,8,

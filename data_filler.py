@@ -48,4 +48,5 @@ fill_table("Locker", "csv/locker.csv", engine, True)
 fill_table("Training", "csv/training.csv", engine, True)
 fill_table("TrainingAttendance", "csv/trainingattendance.csv", engine, True)
 fill_table("Availability", "csv/availability.csv", engine, True)
+fill_table("Fault", "csv/fault.csv", engine, True)
 
