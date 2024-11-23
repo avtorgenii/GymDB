@@ -6,5 +6,5 @@ FROM "Availability" LEFT JOIN "Trainer" ON "Availability".trainerid = "Trainer".
         LEFT JOIN "User" ON "Trainer".userid = "User".id
         LEFT JOIN "Manager" On "Trainer".addedby = "Manager".managerid
         LEFT JOIN "DepartmentLocation" ON "Manager".managerid = "DepartmentLocation".managedby
-GROUP BY 1, 2, 3
-ORDER BY 1, 2, 3
+GROUP BY department, trainer_name, year_month
+ORDER BY department, trainer_name, year_month

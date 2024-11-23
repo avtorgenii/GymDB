@@ -17,6 +17,7 @@ def get_engine():
 
 
 def fill_table(table_name, path, engine, reset_table=False):
+    print(f"Filling table {table_name}...")
     df = pd.read_csv(path)
 
     # Clear table before filling
@@ -26,6 +27,8 @@ def fill_table(table_name, path, engine, reset_table=False):
             connection.commit()
 
     df.to_sql(table_name, engine, if_exists='append', index=False)
+
+    print(f"Filled table {table_name}")
 
 engine = get_engine()
 

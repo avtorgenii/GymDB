@@ -185,12 +185,12 @@ def generate_valid_times():
     return start_time, end_time
 
 
-def generate_trainings(num_rows, training_type_ids, hall_ids, trainer_ids, manager_ids):
+def generate_trainings(num_rows, training_type_ids, hall_ids, trainer_ids, manager_ids, years_ago_offset):
     rows = []
     for _ in range(num_rows):
         start_time, end_time = generate_valid_times()
         rows.append({
-            "date": fake.date_between(start_date='-4y', end_date='today'),
+            "date": fake.date_between(start_date=f'-{years_ago_offset}y', end_date='today'),
             "starttime": start_time.strftime("%H:%M:%S"),
             "endtime": end_time.strftime("%H:%M:%S"),
             "trainingtypeid": random.choice(training_type_ids),
@@ -331,33 +331,31 @@ def generate_availability(num_rows, trainer_ids):
 
 
 if __name__ == '__main__':
-    num_users = 100
     num_administrators = 5
-    num_managers = 5
-    num_technicians = 10
-    num_trainers = 20
-    num_clients = 60
-
-    if num_users != num_administrators + num_managers + num_technicians + num_trainers + num_clients:
-        raise ValueError("NUMBER OF USERS IS NOT EQUAL TO SUM OF USERS WITH ROLES")
+    num_managers = 120
+    num_technicians = 120
+    num_trainers = 500
+    num_clients = 10000
+    num_users = num_administrators + num_managers + num_technicians + num_trainers + num_clients
 
     num_offers = 15
-    num_memberships = 50
+    num_memberships = num_clients
     num_training_types = 7
-    num_department_locations = 5
-    num_halls = 20
+    num_department_locations = 120
+    num_halls = 800
 
-    if num_department_locations > num_training_types:
+    if num_department_locations > num_halls:
         raise ValueError("NUMBER OF DEPARTMENTS IS GREATER THAN NUMBER OF HALLS")
 
-    num_equipment = 200
-    num_faults = 50
-    num_locker_rooms = 20
-    num_lockers = 150
-    num_trainer_qualifications = 20
-    num_availability_records = 2000
-    num_training_sessions = 2500
-    num_training_attendance = 10000
+    num_equipment = 20000
+    num_faults = 500
+    num_locker_rooms = 300
+    num_lockers = 30000
+    num_trainer_qualifications = 1500
+    num_availability_records = 220000
+    num_training_sessions = 100000
+    num_training_attendance = 500000
+    years_ago_offset = 2
 
 
     generate_users(num_users)
@@ -409,7 +407,7 @@ if __name__ == '__main__':
 
     generate_availability(num_availability_records, trainer_ids)
 
-    generate_trainings(num_training_sessions, training_type_ids, hall_ids, trainer_ids, manager_ids)
+    generate_trainings(num_training_sessions, training_type_ids, hall_ids, trainer_ids, manager_ids, years_ago_offset)
     training_ids = list(range(1, num_training_sessions + 1))
 
     generate_training_attendance(num_training_attendance, training_ids, client_ids)
