@@ -1,4 +1,5 @@
 -- Number of clients attended each training_type per month
+EXPLAIN
 SELECT TT.name as training_name,
        DATE_TRUNC('month', "Training".date) as year_month,
        COUNT(*)

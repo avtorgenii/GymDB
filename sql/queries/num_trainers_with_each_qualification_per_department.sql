@@ -1,4 +1,4 @@
-
+--Number of trainers with each qualification per department
 EXPLAIN
 SELECT "DepartmentLocation".name as department,
        "TrainingType".name as training_name,

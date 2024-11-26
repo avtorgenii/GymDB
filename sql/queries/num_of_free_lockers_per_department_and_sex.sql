@@ -1,3 +1,5 @@
+--Number of free lockers per department and sex
+EXPLAIN
 SELECT DL.name as department_name,
        LR.type as sex,
        COUNT(*) as num_free
