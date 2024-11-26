@@ -1,3 +1,5 @@
+--Total hours available per trainer per department
+EXPLAIN
 SELECT "DepartmentLocation".name as department,
        CONCAT("User".firstname, ' ', "User".lastname) as trainer_name,
        DATE_TRUNC('month', "Availability".date) as year_month,
