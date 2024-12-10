@@ -171,16 +171,24 @@ def generate_trainer_qualifications(num_rows, trainer_ids, training_type_ids):
     rows = [{"trainerid": trainer_id, "trainingtypeid": training_type_id} for trainer_id, training_type_id in rows]
     write_to_csv("csv/trainerqualifications.csv", rows[0].keys(), rows)
 
-def generate_valid_times():
+
+def generate_valid_times(max_hours_difference=3, can_be_overnight=False):
     # Generate start_time between 08:00:00 and 21:00:00
     start_time = fake.time_object()
     while start_time < time(8, 0) or start_time > time(21, 0):
         start_time = fake.time_object()
 
-    # Set end_time to be at least 1 hour after start_time, max to 22:00:00
-    end_time = (datetime.combine(datetime.today(), start_time) + timedelta(hours=1)).time()
-    if end_time > time(22, 0):
-        end_time = time(22, 0)
+    # Generate a random difference in hours (minimum 1 hour, maximum as specified)
+    hours_difference = random.randint(1, max_hours_difference)
+
+
+    end_time = (datetime.combine(datetime.today(), start_time) + timedelta(hours=hours_difference)).time()
+    if can_be_overnight:
+        pass
+    elif end_time < start_time:
+        end_time = time(23, 59)
+
+
 
     return start_time, end_time
 
@@ -316,6 +324,31 @@ def generate_lockers(num_rows, locker_room_ids, membership_ids):
     write_to_csv("csv/locker.csv", rows[0].keys(), rows)
 
 
+# Function to generate locker usage history
+def generate_locker_usage_history(num_rows, locker_ids, client_ids, years_ago_offset):
+    rows = []
+    for _ in range(num_rows):
+        locker_id = random.choice(locker_ids)
+        client_id = random.choice(client_ids)
+
+        date = fake.date_between(start_date=f'-{years_ago_offset}y', end_date='today')
+
+        start_time, end_time = generate_valid_times(max_hours_difference=4, can_be_overnight=True)
+
+        rows.append({
+            "date": date.strftime("%Y-%m-%d"),
+            "starttime": start_time.strftime("%H:%M:%S"),
+            "endtime": end_time.strftime("%H:%M:%S"),
+            "lockerid": locker_id,
+            "clientid": client_id,
+        })
+
+
+    fieldnames = ["date", "starttime", "endtime", "lockerid", "clientid"]
+
+    write_to_csv("csv/lockerusagehistory.csv", fieldnames, rows)
+
+
 # Function to create availability
 def generate_availability(num_rows, trainer_ids):
     rows = []
@@ -351,6 +384,7 @@ if __name__ == '__main__':
     num_faults = 500
     num_locker_rooms = 300
     num_lockers = 30000
+    num_locker_usage_history = 100000
     num_trainer_qualifications = 1500
     num_availability_records = 220000
     num_training_sessions = 100000
@@ -402,6 +436,8 @@ if __name__ == '__main__':
     locker_room_ids = list(range(1, num_locker_rooms))
 
     generate_lockers(num_lockers, locker_room_ids, list(range(1, num_memberships + 1)))
+
+    generate_locker_usage_history(num_locker_usage_history, list(range(1, num_lockers + 1)), client_ids, years_ago_offset)
 
     generate_trainer_qualifications(num_trainer_qualifications, trainer_ids, training_type_ids)
 
