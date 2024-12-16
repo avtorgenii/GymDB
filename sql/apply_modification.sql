@@ -60,6 +60,78 @@ DROP CONSTRAINT IF EXISTS "TrainingAttendance_clientid_fkey";
 ALTER TABLE "Membership"
 DROP CONSTRAINT IF EXISTS "Membership_ownedby_fkey";
 
+--Updating user ids and references
+UPDATE "Membership"
+SET OwnedBy = (
+    SELECT "userid"
+    FROM "Client"
+    WHERE "Client"."clientid" = "Membership"."ownedby"
+);
+
+UPDATE "Training"
+SET Manager = (
+    SELECT "userid"
+    FROM "Manager"
+    WHERE "Manager"."managerid" = "Training"."manager"
+);
+
+UPDATE "Training"
+SET Trainer = (
+    SELECT "userid"
+    FROM "Trainer"
+    WHERE "Trainer"."trainerid" = "Training"."trainer"
+);
+
+UPDATE "Fault"
+SET HandledBy = (
+    SELECT "userid"
+    FROM "Technician"
+    WHERE "Technician"."technicianid" = "Fault"."handledby"
+);
+
+UPDATE "Fault"
+SET AddedBy = (
+    SELECT "userid"
+    FROM "Manager"
+    WHERE "Manager"."managerid" = "Fault"."addedby"
+);
+
+UPDATE "DepartmentLocation"
+SET ManagedBy = (
+    SELECT "userid"
+    FROM "Manager"
+    WHERE "Manager"."managerid" = "DepartmentLocation"."managedby"
+);
+
+UPDATE "Availability"
+SET TrainerID = (
+    SELECT "userid"
+    FROM "Trainer"
+    WHERE "Trainer"."trainerid" = "Availability"."trainerid"
+);
+
+UPDATE "TrainerQualifications"
+SET TrainerID = (
+    SELECT "userid"
+    FROM "Trainer"
+    WHERE "Trainer"."trainerid" = "TrainerQualifications"."trainerid"
+);
+
+UPDATE "LockerUsageHistory"
+SET ClientID = (
+    SELECT "userid"
+    FROM "Client"
+    WHERE "Client"."clientid" = "LockerUsageHistory"."clientid"
+);
+
+UPDATE "TrainingAttendance"
+SET ClientID = (
+    SELECT "userid"
+    FROM "Client"
+    WHERE "Client"."clientid" = "TrainingAttendance"."clientid"
+);
+
+
 -- Creating new constraints
 ALTER TABLE "TrainerQualifications"
 ADD CONSTRAINT "TrainerQualifications_trainerid_fkey" FOREIGN KEY ("trainerid")
