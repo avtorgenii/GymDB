@@ -13,7 +13,7 @@ CREATE TABLE "Administrator" (
     AdministratorID SERIAL PRIMARY KEY,
     UserID INT not null,
     CreatedAt DATE DEFAULT current_date not null,
-    FOREIGN KEY (UserID) REFERENCES "User"(ID) ON DELETE CASCADE
+    FOREIGN KEY (UserID) REFERENCES "User"(ID) ON DELETE SET NULL
 );
 
 CREATE TABLE "Manager" (
@@ -46,7 +46,7 @@ CREATE TABLE "Trainer" (
 CREATE TABLE "Client" (
     ClientID SERIAL PRIMARY KEY,
     UserID INT not null,
-    FOREIGN KEY (UserID) REFERENCES "User"(ID) ON DELETE CASCADE
+    FOREIGN KEY (UserID) REFERENCES "User"(ID) ON DELETE SET NULL
 );
 
 CREATE TABLE "Offer" (
@@ -150,16 +150,16 @@ CREATE TABLE "Locker" (
     FOREIGN KEY (OccupiedBy) REFERENCES "Membership"(ID) ON DELETE SET NULL
 );
 
-CREATE TABLE "LockerUsageHistory" (
-    ID SERIAL PRIMARY KEY,
-    Date DATE not null default current_date,
-    StartTime TIME not null default current_time,
-    EndTime TIME,
-    LockerID INT not null,
-    ClientID INT not null,
-    FOREIGN KEY (LockerID) REFERENCES "Locker"(ID) ON DELETE SET NULL ,
-    FOREIGN KEY (ClientID) REFERENCES "Client"(ClientID) ON DELETE SET NULL
-);
+-- CREATE TABLE "LockerUsageHistory" (
+--     ID SERIAL PRIMARY KEY,
+--     Date DATE not null default current_date,
+--     StartTime TIME not null default current_time,
+--     EndTime TIME,
+--     LockerID INT not null,
+--     ClientID INT not null,
+--     FOREIGN KEY (LockerID) REFERENCES "Locker"(ID) ON DELETE SET NULL ,
+--     FOREIGN KEY (ClientID) REFERENCES "Client"(ClientID) ON DELETE SET NULL
+-- );
 
 CREATE TABLE "Training" (
     ID SERIAL PRIMARY KEY,
