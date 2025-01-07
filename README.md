@@ -16,4 +16,4 @@ Uruchomienie kontenera z bazą
 docker run -d -p 27017:27017 --name mongo-db mongo:latest
 ```
 
-W PyCharm dodać connection z MongoDB tak samo jak z Postgresem, tylko że Authentication: No auth
+W PyCharm dodać connection z MongoDB tak samo jak z Postgresem, tylko że ```Authentication: No auth```
