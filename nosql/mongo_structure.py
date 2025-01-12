@@ -1,5 +1,5 @@
 from mongoengine import Document, StringField, DateField, BooleanField, ReferenceField, ListField, EmbeddedDocument, \
-    EmbeddedDocumentField, FloatField, IntField
+    EmbeddedDocumentField, FloatField, IntField, EmailField, CASCADE
 from datetime import datetime, timezone
 
 
@@ -19,7 +19,7 @@ class UserRole(EmbeddedDocument):
 
 # User collection
 class User(Document):
-    email = StringField(max_length=100, unique=True, required=True)
+    email = EmailField(max_length=100, unique=True, required=True)
     first_name = StringField(max_length=255)
     last_name = StringField(max_length=255)
     phone = StringField(max_length=25, unique=True)
@@ -43,7 +43,7 @@ class Membership(Document):
     start_date = DateField(default=datetime.now(timezone.utc))
     end_date = DateField()
     offer = ReferenceField(Offer, required=True)
-    owned_by = ReferenceField('User', required=True)  # Client's reference
+    owned_by = ReferenceField(User, required=True)  # Client's reference
 
 
 # TrainingType collection
@@ -66,7 +66,7 @@ class DepartmentLocation(Document):
     postal_code = StringField(max_length=50, required=True)
     street = StringField(max_length=255, required=True)
     building_number = StringField(max_length=10, required=True)
-    managed_by = ReferenceField('User', reverse_delete_rule='CASCADE')
+    managed_by = ReferenceField(User, reverse_delete_rule='CASCADE')
 
 
 # Hall collection

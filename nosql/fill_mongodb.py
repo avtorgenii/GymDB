@@ -1,5 +1,5 @@
 from mongoengine import connect
-from create_mongodb import *
+from mongo_structure import *
 from datetime import datetime, timezone
 
 connect('gym')
