@@ -43,3 +43,4 @@ xz=5.4.6=h8cc25b3_1
 zlib=1.2.13=h8cc25b3_1
 
 pymongo
+mongoengine
