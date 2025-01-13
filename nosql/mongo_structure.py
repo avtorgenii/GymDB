@@ -1,20 +1,7 @@
 from mongoengine import Document, StringField, DateField, BooleanField, ReferenceField, ListField, EmbeddedDocument, \
-    EmbeddedDocumentField, FloatField, IntField, EmailField, CASCADE
+    EmbeddedDocumentField, FloatField, IntField, EmailField
 from datetime import datetime, timezone
 
-
-# Availability embedded document
-class Availability(EmbeddedDocument):
-    date = DateField(default=datetime.now)
-    start_time = StringField()
-    end_time = StringField()
-
-
-# UserRole embedded document
-class UserRole(EmbeddedDocument):
-    role_type = StringField(choices=['Administrator', 'Manager', 'Technician', 'Trainer', 'Client'], required=True)
-    created_at = DateField(default=datetime.now(timezone.utc))
-    added_by = ReferenceField('User')
 
 
 # User collection
@@ -26,7 +13,9 @@ class User(Document):
     password = StringField(required=True)
     registration_date = DateField(default=datetime.now(timezone.utc))
     is_active = BooleanField(default=True)
-    role = EmbeddedDocumentField(UserRole)
+    role = StringField(choices=['Administrator', 'Manager', 'Technician', 'Trainer', 'Client'], required=True) # May be modified in future if new roles appear
+    created_at = DateField(default=datetime.now(timezone.utc))
+    added_by = ReferenceField('User')
 
 
 # Offer collection
@@ -48,12 +37,19 @@ class Membership(Document):
 
 # TrainingType collection
 class TrainingType(Document):
-    name = StringField(max_length=50, required=True)
+    name = StringField(required=True)
     description = StringField(max_length=500)
 
 
+# Availability embedded document
+class Availability(EmbeddedDocument):
+    date = DateField(default=datetime.now)
+    start_time = StringField()
+    end_time = StringField()
+
+
 # Trainer collection
-class Trainer(Document):
+class Trainer(Document): # Okay solution to make another collection for Trainer???
     user = ReferenceField(User, required=True)
     qualifications = ListField(ReferenceField(TrainingType))
     availability = ListField(EmbeddedDocumentField(Availability))
@@ -66,7 +62,7 @@ class DepartmentLocation(Document):
     postal_code = StringField(max_length=50, required=True)
     street = StringField(max_length=255, required=True)
     building_number = StringField(max_length=10, required=True)
-    managed_by = ReferenceField(User, reverse_delete_rule='CASCADE')
+    managed_by = ReferenceField(User, reverse_delete_rule='NULLIFY')
 
 
 # Hall collection
@@ -87,13 +83,13 @@ class Fault(Document):
     date_reported = DateField(default=datetime.now(timezone.utc))
     status = StringField(choices=['Reported', 'Under Repair', 'Fixed', 'Cannot Be Repaired'], default='Reported')
     equipment = ReferenceField(Equipment, required=True)
-    handled_by = ReferenceField('Trainer', reverse_delete_rule='SET_NULL')
-    added_by = ReferenceField('User', reverse_delete_rule='SET_NULL')
+    handled_by = ReferenceField(User, reverse_delete_rule='NULLIFY') # handled by technician role
+    added_by = ReferenceField(User, reverse_delete_rule='NULLIFY') # added by technician or manager role
 
 
 # LockerRoom collection
 class LockerRoom(Document):
-    type = StringField(max_length=50, required=True)
+    type = StringField(choices=["Men", "Women", "Unisex"], max_length=50, required=True)
     department_location = ReferenceField(DepartmentLocation, required=True)
 
 
@@ -108,18 +104,21 @@ class Locker(Document):
 # Training collection
 class Training(Document):
     date = DateField(required=True)
-    start_time = StringField()
-    end_time = StringField()
+    start_time = StringField(required=True, regex=r'^\d{2}:\d{2}(:\d{2})?$')  # HH:mm or HH:mm:ss
+    end_time = StringField(required=True, regex=r'^\d{2}:\d{2}(:\d{2})?$')  # HH:mm or HH:mm:ss
     training_type = ReferenceField(TrainingType, required=True)
-    hall = ReferenceField(Hall)
-    trainer = ReferenceField(Trainer)
-    manager = ReferenceField('User')
-    attendees = ListField(ReferenceField(Membership))
+    hall = ReferenceField(Hall, required=True)
+    trainer = ReferenceField(Trainer, required=True)
+    manager = ReferenceField(User, required=True)
+    attendees = ListField(ReferenceField(User))
 
 
-# TrainingAttendance collection
-class TrainingAttendance(Document):
-    training = ReferenceField(Training, required=True)
-    client = ReferenceField(Membership, required=True)
 
+# Trainer test
+if __name__ == '__main__':
+    user = User()
+    trainer = Trainer()
+    trainer.user = user
+    trainer.user.first_name = 'John'
 
+    print(trainer.user.created_at)
