@@ -4,6 +4,11 @@ from datetime import datetime, timezone
 
 connect('gym')
 
+# Create embedded role doc for user
+user_role = UserRole(
+    name='Trainer',
+    added_by=None
+)
 
 # Create a User
 user = User(
@@ -12,10 +17,7 @@ user = User(
     last_name='Doe',
     phone='1234567890',
     password='hashed_password',
-    role=UserRole(
-        role_type='Administrator',
-        added_by=None
-    )
+    role=user_role
 )
 user.save()
 
@@ -53,7 +55,7 @@ trainer = Trainer(
 trainer.save()
 
 # Create a DepartmentLocation
-department_location = DepartmentLocation(
+department = Department(
     name='Main Gym',
     city='Warsaw',
     postal_code='00-001',
@@ -61,12 +63,12 @@ department_location = DepartmentLocation(
     building_number='1A',
     managed_by=user
 )
-department_location.save()
+department.save()
 
 # Create a Hall
 hall = Hall(
     name='Yoga Hall',
-    department_location=department_location
+    department=department
 )
 hall.save()
 
@@ -81,15 +83,15 @@ equipment.save()
 fault = Fault(
     description='Mat is damaged.',
     equipment=equipment,
-    handled_by=trainer,
+    handled_by=user,
     added_by=user
 )
 fault.save()
 
 # Create a LockerRoom
 locker_room = LockerRoom(
-    type='Male',
-    department_location=department_location
+    type='Men',
+    department=department
 )
 locker_room.save()
 
@@ -110,13 +112,7 @@ training = Training(
     hall=hall,
     trainer=trainer,
     manager=user,
-    attendees=[membership]
+    attendees=[user]
 )
 training.save()
 
-# Create a TrainingAttendance
-training_attendance = TrainingAttendance(
-    training=training,
-    client=membership
-)
-training_attendance.save()

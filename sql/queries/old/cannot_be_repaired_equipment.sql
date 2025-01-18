@@ -1,5 +1,4 @@
 -- How many equipment pieces of every name cannot be repaired
-EXPLAIN
 SELECT name,
        status,
        COUNT(*) number
