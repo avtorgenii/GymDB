@@ -4,6 +4,12 @@ from datetime import datetime, timezone
 
 
 
+# User role embedded document
+class UserRole(EmbeddedDocument):
+    name = StringField(choices=['Administrator', 'Manager', 'Technician', 'Trainer', 'Client'], required=True) # May be modified in future if new roles appear
+    created_at = DateField(default=datetime.now(timezone.utc))
+    added_by = ReferenceField('User')
+
 # User collection
 class User(Document):
     email = EmailField(max_length=100, unique=True, required=True)
@@ -13,10 +19,7 @@ class User(Document):
     password = StringField(required=True)
     registration_date = DateField(default=datetime.now(timezone.utc))
     is_active = BooleanField(default=True)
-    role = StringField(choices=['Administrator', 'Manager', 'Technician', 'Trainer', 'Client'], required=True) # May be modified in future if new roles appear
-    created_at = DateField(default=datetime.now(timezone.utc))
-    added_by = ReferenceField('User')
-
+    role = EmbeddedDocumentField(UserRole)
 
 # Offer collection
 class Offer(Document):
@@ -56,7 +59,7 @@ class Trainer(Document): # Okay solution to make another collection for Trainer?
 
 
 # DepartmentLocation collection
-class DepartmentLocation(Document):
+class Department(Document):
     name = StringField(max_length=255, required=True)
     city = StringField(max_length=255, required=True)
     postal_code = StringField(max_length=50, required=True)
@@ -68,7 +71,7 @@ class DepartmentLocation(Document):
 # Hall collection
 class Hall(Document):
     name = StringField(max_length=255, required=True)
-    department_location = ReferenceField(DepartmentLocation, required=True)
+    department = ReferenceField(Department, required=True)
 
 
 # Equipment collection
@@ -90,7 +93,7 @@ class Fault(Document):
 # LockerRoom collection
 class LockerRoom(Document):
     type = StringField(choices=["Men", "Women", "Unisex"], max_length=50, required=True)
-    department_location = ReferenceField(DepartmentLocation, required=True)
+    department = ReferenceField(Department, required=True)
 
 
 # Locker collection
