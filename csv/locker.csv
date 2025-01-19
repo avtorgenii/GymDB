@@ -1,4 +1,4 @@
-number,status,lockerroomid,occupiedby
+number,status,locker_room_id,occupied_by
 14,Free,110,
 61,Occupied,196,5614
 34,Not available,52,

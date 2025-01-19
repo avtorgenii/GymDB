@@ -1,4 +1,4 @@
-startdate,enddate,offerid,ownedby
+start_date,end_date,offer_id,owned_by
 2024-08-18,2024-09-09,2,9812
 2024-04-01,2024-04-10,15,3456
 2024-10-31,2024-11-07,15,2406

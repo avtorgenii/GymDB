@@ -1,4 +1,4 @@
-email,firstname,lastname,phone,password,registrationdate,isactive
+email,first_name,last_name,phone,password,registration_date,is_active
 robert02@example.org,Maciej,Wolańczyk,606 168 714,v8b4GcwN$P,2021-06-11,True
 ksawerytrzos@example.org,Leonard,Krzysztoszek,+48 571 292 533,fr4DNxoP(E,2023-02-10,True
 ignacycieciura@example.com,Marianna,Gumienny,+48 503 016 852,7C*v8KwpGc,2020-07-04,True

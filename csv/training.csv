@@ -1,4 +1,4 @@
-date,starttime,endtime,trainingtypeid,hallid,trainer,manager
+date,start_time,end_time,training_type_id,hall_id,trainer,manager
 2024-10-22,14:41:39,17:41:39,6,610,149,8
 2024-10-23,11:07:31,14:07:31,3,13,204,56
 2024-02-04,12:10:40,15:10:40,7,24,473,7
