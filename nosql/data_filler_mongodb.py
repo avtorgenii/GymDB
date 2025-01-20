@@ -66,11 +66,13 @@ def add_trainers():
                 result = {"user": User.objects[int(value) - 1], "qualifications": selected_items, "availability": get_random_availability()}
                 trainer = Trainer(**result)
                 trainer.save()
-                print("Trainers loaded")
+            print("Trainers loaded")
     except Exception as e:
         print(f"Error loading data into {Trainer.__name__}: {e}")
 
 #due to differences between normal and non-relational databases trainers will need to be assigned randomly
+#this could be mapped using older relational id models, but would be computationally costly
+#and probably not complete in time
 def add_training():
     reference_iterator = 0
 
@@ -111,29 +113,30 @@ def add_training():
             except Exception as e:
                 print(f"Error loading data into {Trainer.__name__}: {e}")
 
-def add_user_types():
+def add_user_roles():
     options = ['Administrator', 'Manager', 'Technician', 'Trainer', 'Client']
     try:
         for document in User.objects:
-            user_role = UserRole(user_role = random.choice(options))
-            document.role = UserRole(Role=user_role)
+            user_role = UserRole(name = random.choice(options))
+            document.role = user_role
             document.save()
-            print("Roles added")
+        print("Roles added")
     except Exception as e:
-        print(f"Error loading data into {User.__name__}: {e}")
+        print(f"Error loading roles into {User.__name__}: {e}")
 
 def add_attendees():
-    users = User.objects
+    users = list(User.objects)
     try:
         for document in Training.objects:
             document.attendees = random.sample(users, random.randint(1, 5))
             document.save()
         print("Attendees loaded")
     except Exception as e:
-        print(f"Error loading data into {Training.__name__}: {e}")
+        print(f"Error loading attendees into {Training.__name__}: {e}")
 
 def main():
     connect(db ='gym', host = '127.0.0.1', port = 27017)
+
 
     csv_model_map = {
         "user.csv": (User, None),
@@ -158,8 +161,8 @@ def main():
     add_training()
     #load_csv_data(path_to_csv + "training.csv", Training, {"training_type": TrainingType,"hall": Hall, "trainer": User, "manager": User})
 
-    #now adding previously skipped fields of role in User and attendees in Trainig
-    add_user_types()
+    #now adding previously skipped fields of role in User and attendees in Training
+    add_user_roles()
     add_attendees()
 
 if __name__ == '__main__':
