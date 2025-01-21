@@ -13,7 +13,11 @@ user_roles = ['Administrator', 'Manager', 'Technician', 'Trainer', 'Client']
 #This file requires subtle changes to csv files in order to work properly (at all)
 #csv files as generated do no separate words, whereas this script requires for words to be separataed by '_'
 
-
+#This loads csv data into the database, but only if the structure of the csv matches the structure
+#in mongo_structure.py - if it doesn't it will fail
+#file_name is the name of the file, model is the name of the class in mongo_structure.py
+#reference fields is a dictionary of type {String:Document} where string is the name of the field in mongo_structure.py
+#and the Document is the class of the model this field should reference
 def load_csv_data(file_name, model, reference_fields=None):
     try:
         with open(file_name, mode='r', encoding='utf=8') as csv_file:
@@ -51,6 +55,9 @@ def load_csv_data(file_name, model, reference_fields=None):
     except Exception as e:
         print(f"Error loading data from {file_name} into {model.__name__}: {e}")
 
+#due to differences between normal and non-relational databases trainers will need to be assigned randomly
+#this could be mapped using older relational id models, but would be computationally costly
+#and probably not complete in time
 def add_trainers():
     qualifications_count = TrainingType.objects.count()
     source_items = list(TrainingType.objects)
@@ -70,9 +77,8 @@ def add_trainers():
     except Exception as e:
         print(f"Error loading data into {Trainer.__name__}: {e}")
 
-#due to differences between normal and non-relational databases trainers will need to be assigned randomly
-#this could be mapped using older relational id models, but would be computationally costly
-#and probably not complete in time
+#This basically loads trainings, except it assigns random trainers
+#Trainers could be mapped but it would be expensive
 def add_training():
     reference_iterator = 0
 
@@ -113,6 +119,7 @@ def add_training():
             except Exception as e:
                 print(f"Error loading data into {Trainer.__name__}: {e}")
 
+#This assigns previously ignored roles to each user randomly
 def add_user_roles():
     options = ['Administrator', 'Manager', 'Technician', 'Trainer', 'Client']
     try:
@@ -124,6 +131,7 @@ def add_user_roles():
     except Exception as e:
         print(f"Error loading roles into {User.__name__}: {e}")
 
+#this assigns randomly between 1 and 5 attendees to each training
 def add_attendees():
     users = list(User.objects)
     try:
@@ -135,8 +143,12 @@ def add_attendees():
         print(f"Error loading attendees into {Training.__name__}: {e}")
 
 def main():
+    print(f"Loading data from {path_to_csv} into the database")
     connect(db ='gym', host = '127.0.0.1', port = 27017)
 
+    #All the loading mapping beneath is based on structure in mongo_structure.py and assumed csv file names
+    #IF there's no file for a specific Document then the script will try and fail to load it, but it will
+    #not interrupt the entire programme.
 
     csv_model_map = {
         "user.csv": (User, None),
@@ -147,7 +159,8 @@ def main():
         "departmentlocation.csv": (Department, {"managed_by": User}),
         "hall.csv": (Hall, {"department": Department}),
         "equipment.csv": (Equipment, {"hall": Hall}),
-        # Missing file "fault.csv": (Fault, None),
+        #fault.csv might have reference to technicians instead of users, then it would be better assign random users
+        "fault.csv": (Fault, {"equipment": Equipment, "handled_by": User, "added_by": User}),
         "lockerroom.csv": (LockerRoom, {"department": Department}),
         "locker.csv": (Locker, {"locker_room": LockerRoom, "occupied_by": Membership}),
         # Will be added after adding trainers "training.csv": (Training, None),
